@@ -18,10 +18,10 @@ def custom_exception_handler(exc, context):
             response.data = {
                 'success': False,
                 'status_code': response.status_code,
-                'message': response.data['detail'],
+                'message': response.data['detail'] if 'detail' in response.data else '',
                 'data': (
                     response.data['data'] if 'data' in response.data
-                    else None
+                    else response.data
                 )
             }
 

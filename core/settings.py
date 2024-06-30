@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from datetime import timedelta
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -83,11 +84,11 @@ USE_TZ = True
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DB_HOST = os.getenv(key="DB_HOST", default="localhost")
-DB_NAME = os.getenv(key="DB_NAME", default="db_name")
-DB_USER = os.getenv(key="DB_USER", default="root")
-DB_PASSWORD = os.getenv(key="DB_PASSWORD", default="password")
-DB_PORT = os.getenv(key="DB_PORT", default=5432)
+DB_HOST = os.getenv(key="DB_HOST")
+DB_NAME = os.getenv(key="DB_NAME")
+DB_USER = os.getenv(key="DB_USER")
+DB_PASSWORD = os.getenv(key="DB_PASSWORD")
+DB_PORT = os.getenv(key="DB_PORT")
 
 DATABASES = {
     "default": {
@@ -139,7 +140,7 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.FormParser",
         "rest_framework.parsers.MultiPartParser",
     ],
-    # "DEFAULT_AUTHENTICATION_CLASSES": ["accounts.custom_rest_auth.JWTAuthentication"],
+    "DEFAULT_AUTHENTICATION_CLASSES": ['accounts.authentication.CustomJWTAuthentication'],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
@@ -186,3 +187,23 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+}
+
+# Cookies settings
+AUTH_COOKIE = 'access'
+AUTH_COOKIE_REFRESH = 'refresh'
+AUTH_COOKIE_ACCESS_MAX_AGE = SIMPLE_JWT.get('ACCESS_TOKEN_LIFETIME')
+AUTH_COOKIE_REFRESH_MAX_AGE = SIMPLE_JWT.get('REFRESH_TOKEN_LIFETIME')
+AUTH_COOKIE_SECURE = os.getenv(key='AUTH_COOKIE_SECURE', default='True') == 'True'
+AUTH_COOKIE_HTTP_ONLY = True
+AUTH_COOKIE_PATH = '/'
+AUTH_COOKIE_SAME_SITE = 'None' # Strict/Lax/None
+
